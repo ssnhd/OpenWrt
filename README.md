@@ -1,7 +1,7 @@
 # OpenWrt 常见疑问
 
 ## 一、查看网口型号
-1. 打开 OpenWrt 终端，输入 `root`，回车键
+1. 打开 OpenWrt 终端，输入 `root` 回车键
 2. 输入路由器密码，回车键
 3. 输入 `lspci -nn | grep Ethernet`
 4. 会出现下面代码即网口型号（几个网口就出现几列）
@@ -46,3 +46,9 @@ supports-priv-flags: yes
 5. 清除路由器硬盘并保存
 6. 打开我的电脑里 IIMG写盘工具，选择路由器硬盘，选择固件开始写入
 7. 好了后重启，拔下 U 盘。
+
+---
+## 三、删除 OpenWrt 登录密码
+1. 打开 OpenWrt 终端，输入 `root` 回车键
+2. 输入路由器密码，回车键
+3. 输入 `passwd -d root` 回车键
