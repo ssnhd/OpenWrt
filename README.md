@@ -1,60 +1,124 @@
 # OpenWrt 常见疑问
 
-
----
 ## 安装 iStoreOS
 
-1. Mac 电脑安装 [balenaEtcher](https://etcher.balena.io/) 软件
-2. 下载 [iStoreOS](https://fw.koolcenter.com/iStoreOS/x86_64_efi/) 固件
-3. 打开 balenaEtcher，从文件烧录选择刚下载好的 iStoreOS 固件，再选择 U 盘，最后点击**现在烧录**
-4. 将 U 盘插上路由器，开机按 Delete 键进入 BIOS，选择 U 盘启动，保存并重启
-5. 显示屏上代码跑完，输入 `quickstart` 回车键
-6. 选择「Install X86」，按回车键
-7. 选择硬盘、清除硬盘，分别按回车键
-8. 开始将 U 盘上的内容克隆到路由器硬盘
+1. Mac 电脑安装 [balenaEtcher](https://etcher.balena.io/) 软件；
+2. 下载 [iStoreOS](https://fw.koolcenter.com/iStoreOS/x86_64_efi/) 固件；
+3. 插上 U 盘，打开 balenaEtcher，选择 iStoreOS 固件和 U 盘，点击**现在烧录**；
+4. 将 U 盘插上路由器，开机按 Delete 键进入 BIOS，选择 U 盘启动，保存并重启；
+5. 显示屏上代码跑完，输入 `quickstart` 回车键；
+6. 选择「Install X86」，按回车键；
+7. 选择硬盘、清除硬盘，分别按回车键；
+8. 开始将 U 盘上的内容克隆到路由器硬盘；
 9. 拔下 U 盘，重启。
 
-**老毛桃 PE**
-1. Windows 安装[老毛桃](https://www.laomaotao.net/)
-2. 将 U 盘插上电脑，打开老毛桃制作 U 盘启动器
-3. 制作好后，将 OpenWrt 固件和 IMG 写盘工具存到 U 盘根目录
-4. 将 U 盘插上路由器，开机按 Delete 键进入 BIOS，选择 U 盘启动，保存并重启
-5. 清除路由器硬盘并保存
-6. 我的电脑 → 老毛桃 → IMG写盘工具，选择本地硬盘，选择固件开始写入
+## 安装其他版本
+
+1. Win 电脑安装[老毛桃](https://www.laomaotao.net/)；
+2. 将 U 盘插上电脑，打开老毛桃制作 U 盘启动器；
+3. 制作好后，将 OpenWrt 固件（例如 [ImmortalWrt](https://github.com/immortalwrt/immortalwrt)）和 [IMG 写盘工具](https://sourceforge.net/projects/diskimage/)存到 U 盘根目录；
+4. 将 U 盘插上路由器，开机按 Delete 键进入 BIOS，选择 U 盘启动，保存并重启；
+5. 清除路由器硬盘并保存；
+6. 我的电脑 → 老毛桃 → IMG写盘工具，选择本地硬盘，选择固件开始写入；
 7. 拔下 U 盘，重启。
 
-## 删除 OpenWrt 登录密码
+## 终端后台
+
+以 Mac 为例，打开终端输入`ssh root@192.168.x.x` 按回车键，再输入密码按回车键，无密码请忽略。
+
+⚠️注：将 `x` 替换为你的路由地址。
+
+## 删除密码
+
 1. 打开 OpenWrt 终端，输入 `root` 回车键
 2. 输入路由器密码，回车键
 3. 输入 `passwd -d root` 回车键
 
 ## 恢复出厂设置
+
 1. 进入 OpenWrt 后台，输入 `root` 回车后输入密码
 2. 输入 `firstboot` 回车键
 3. 输入 `reboot` 回车键
 
 ## 查看网口型号
+
 1. 打开 OpenWrt 终端，输入 `root` 回车键
 2. 输入路由器密码，回车键
-3. 输入 `lspci -nn | grep Ethernet`
-4. 会出现下面代码即网口型号（几个网口就出现几列）
+3. 输入 `dmesg | grep -i eth` 会显示系统启动时识别到的网卡信息
+
+## 升级 PassWall
+1. 打开 https://github.com/xiaorouji/openwrt-passwall 下载①最新版（luci 开头）；②最新版中文包（luci 开头）；③ CPU 架构（passwall 开头）
+2. 解压③，将①②放进③文件夹里
+3. 进入路由器后台，**服务** → **易有云文件管理器** → **本地文件管理** → 新建一个文件夹（例如叫 passwall），将③里的文件全部上传
+4. 进入路由器终端，输入 `cd /tmp/passwall` 回车键
+5. 在输入 `opkg install *.ipk` 或者 `opkg install *.ipk --force-reinstall` 按回车键升级即可
+
+参考：https://www.youtube.com/watch?v=zMRiN2UzP4A
+
+## 第三方软件包
+
+打开软件包 → 配置OPKG…
+
+1. 注释掉检查签名：/etc/opkg.conf 里 #option check_signature 前面加 `#`
+
+2. 添加软件源地址：在 /etc/opkg/customfeeds.conf 里添加
 ```
-01:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller I225-V [8086:15f3] (rev 03)
-02:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller I225-V [8086:15f3] (rev 03)
-03:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller I225-V [8086:15f3] (rev 03)
-04:00.0 Ethernet controller [0200]: Intel Corporation Ethernet Controller I225-V [8086:15f3] (rev 03)
+src/gz dllkids https://op.dllkids.xyz/packages/x86_64/
 ```
 
-你也可以输入 `ethtool -i eth0` 来查看单个网口型号，其中 `eth0` 是您想要查看的网卡的名称。
+![](https://i.imgur.com/Rq3TSzs.png)
+
+
+## ImmortalWrt 固件编辑
+
+官网：[下载适用于您设备的 ImmortalWrt 固件](https://firmware-selector.immortalwrt.org/?version=24.10.1&target=x86%2F64&id=generic)
+
+**预安装的软件包**
+
+`luci-i18n-firewall-zh-cn luci-i18n-filebrowser-zh-cn luci-i18n-argon-config-zh-cn luci-i18n-package-manager-zh-cn luci-i18n-ttyd-zh-cn luci-i18n-passwall-zh-cn luci-app-openclash luci-i18n-homeproxy-zh-cn openssh-sftp-server luci-i18n-autoreboot-zh-cn luci-i18n-netdata-zh-cn`
+
+- 汉化防火墙：luci-i18n-firewall-zh-cn
+- 文件管理器：luci-i18n-filebrowser-zh-cn
+- 紫色主题：luci-app-argon-config
+- 软件包汉化：luci-i18n-argon-config-zh-cn
+- 终端：luci-i18n-ttyd-zh-cn
+- PassWall：luci-i18n-passwall-zh-cn
+- OpenClash：luci-app-openclash
+- homeproxy：luci-i18n-homeproxy-zh-cn
+- 为OpenVPN服务器提供图形界面：openssh-sftp-server
+- 定时重启：luci-i18n-autoreboot-zh-cn
+- 实时监控：luci-i18n-netdata-zh-cn
+
+上面的软件根据需求添加，如果不知道软件名称在[仓库](https://mirrors.vsean.net/openwrt/releases/23.05.4/packages/x86_64/luci/?sort=size&order=desc)搜索和查询。
+
+**首次启动时运行的脚本（uci-defaults）**
+
 ```
-driver: igc
-version: 5.10.176
-firmware-version: 
-expansion-rom-version: 
-bus-info: 0000:01:00.0
-supports-statistics: yes
-supports-test: yes
-supports-eeprom-access: yes
-supports-register-dump: yes
-supports-priv-flags: yes
+# 设置默认wan口防火墙打开 方便虚拟机用户首次访问webui
+uci set firewall.@zone[1].input='ACCEPT'
+uci commit firewall
+# 设置主机名映射 解决安卓原生TV首次连不上网的问题
+uci add dhcp domain
+uci set "dhcp.@domain[-1].name=time.android.com"
+uci set "dhcp.@domain[-1].ip=203.107.6.88"
+uci commit dhcp
+# 根据网卡数量配置网络
+count=0
+for iface in $(ls /sys/class/net | grep -v lo); do
+  # 检查是否有对应的设备，并且排除无线网卡
+  if [ -e /sys/class/net/$iface/device ] && [[ $iface == eth* || $iface == en* ]]; then
+    count=$((count + 1))
+  fi
+done
+if [ "$count" -eq 1 ]; then
+    # 单个网卡，设置为 DHCP 模式
+    uci set network.lan.proto='dhcp'
+    uci commit network
+elif [ "$count" -gt 1 ]; then
+    # 多个网卡，保持静态 IP
+    uci set network.lan.ipaddr='192.168.2.1'
+    uci commit network
+fi
 ```
+
+友链：[悟空的日常](https://wkdaily.cpolar.top/archives/immortalwrt)
